@@ -1,1426 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Vera.ML | First Developer-Native Analytics Platform</title>
-    <meta name="description" content="Vera.ML - The first developer-native analytics platform that works at the repository level to turn every code change into a business insight — automatically, in real time, and with scientific rigor." />
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vera.ML – Developer-Native Analytics Platform</title>
+  <style>
+    :root {
+      /* will be overridden by JS on load/resize */
+      --line-spacing: 20px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: this;
+      background: transparent;      /* let the canvas show through */
+      overflow: auto;               /* enable scrolling */
+      color: rgba(0, 0, 0, 0.8);
+      font-family: monospace;
+      line-height: 1.6;
+      scroll-behavior: smooth;      /* smooth scrolling between sections */
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;                   /* above body, beneath content */
+      background: #f7f7f7;          /* light "paper" for the rulings */
+      display: block;
+    }
+
+    .section {
+      position: relative;
+      z-index: 1;
+      height: 75vh;                /* reduced from 100vh to bring sections closer */
+      margin-bottom: -8vh;         /* negative margin to bring sections closer */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 8vh;            /* add padding to maintain proper spacing */
+    }
+
+    .content {
+      max-width: 600px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .team-members {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .team-member {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+
+    .team-member h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
     
-    <!-- Fonts and Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    .team-member p {
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
     
-    <!-- Open Graph tags for better social media sharing -->
-    <meta property="og:title" content="Vera.ML | Developer-Native Analytics Platform" />
-    <meta property="og:description" content="Turn code changes into business insights automatically, in real-time, with scientific rigor." />
-    <meta property="og:type" content="website" />
+    .team-member a {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+    }
+
+    nav a {
+      margin: 0 0.5rem;
+      color: #0645ad;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    a {
+      color: #0645ad;
+      text-decoration: none;
+    }
     
-    <style>
-      /* Base styles */
-      :root {
-        --code-bg: #0D1117;
-        --code-secondary: #0D1117;
-        --code-text: #E6E6E6;
-        --code-accent: #E6E6E6;
-        --code-keyword: #E6E6E6;
-        --code-variable: #E6E6E6;
-        --code-function: #E6E6E6;
-        --code-comment: #8B949E;
-      }
-      
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      html {
-        scroll-behavior: smooth;
-      }
-      
-      body {
-        font-family: 'Fira Code', monospace;
-        background-color: var(--code-bg);
-        color: var(--code-text);
-        line-height: 1.6;
-      }
-      
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      
-      ul {
-        list-style: none;
-      }
-      
-      /* Layout */
-      .container {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-      
-      .flex {
-        display: flex;
-      }
-      
-      .flex-col {
-        flex-direction: column;
-      }
-      
-      .items-center {
-        align-items: center;
-      }
-      
-      .justify-between {
-        justify-content: space-between;
-      }
-      
-      .text-center {
-        text-align: center;
-      }
-      
-      /* Typography */
-      .text-sm {
-        font-size: 0.875rem;
-      }
-      
-      .text-lg {
-        font-size: 1.125rem;
-      }
-      
-      .text-xl {
-        font-size: 1.25rem;
-      }
-      
-      .text-2xl {
-        font-size: 1.5rem;
-      }
-      
-      .text-3xl {
-        font-size: 1.875rem;
-      }
-      
-      .text-4xl {
-        font-size: 2.25rem;
-      }
-      
-      @media (min-width: 768px) {
-        .text-4xl {
-          font-size: 2.5rem;
-        }
-        
-        .text-lg {
-          font-size: 1.2rem;
-        }
-      }
-      
-      .font-semibold {
-        font-weight: 600;
-      }
-      
-      .font-bold {
-        font-weight: 700;
-      }
-      
-      .leading-relaxed {
-        line-height: 1.7;
-      }
-      
-      /* Colors */
-      .text-code-text {
-        color: var(--code-text);
-      }
-      
-      .text-code-accent {
-        color: var(--code-accent);
-      }
-      
-      .text-code-keyword {
-        color: var(--code-keyword);
-      }
-      
-      .text-code-variable {
-        color: var(--code-variable);
-      }
-      
-      .text-code-function {
-        color: var(--code-function);
-      }
-      
-      .text-code-comment {
-        color: var(--code-comment);
-      }
-      
-      .bg-code-bg {
-        background-color: var(--code-bg);
-      }
-      
-      .bg-code-secondary {
-        background-color: var(--code-secondary);
-      }
-      
-      .border-code-accent {
-        border-color: var(--code-accent);
-      }
-      
-      .border-code-secondary {
-        border-color: var(--code-secondary);
-      }
-      
-      /* Utilities */
-      .px-4 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-      
-      .py-3 {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-      }
-      
-      .py-4 {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-      }
-      
-      .py-6 {
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
-      }
-      
-      .py-8 {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-      }
-      
-      .py-16 {
-        padding-top: 4rem;
-        padding-bottom: 4rem;
-      }
-      
-      .py-20 {
-        padding-top: 5rem;
-        padding-bottom: 5rem;
-      }
-      
-      .pt-24 {
-        padding-top: 6rem;
-      }
-      
-      .pt-28 {
-        padding-top: 7rem;
-      }
-      
-      .px-6 {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-      }
-      
-      .p-4 {
-        padding: 1rem;
-      }
-      
-      .p-6 {
-        padding: 1.5rem;
-      }
-      
-      .p-8 {
-        padding: 2rem;
-      }
-      
-      .mb-2 {
-        margin-bottom: 0.5rem;
-      }
-      
-      .mb-3 {
-        margin-bottom: 0.75rem;
-      }
-      
-      .mb-4 {
-        margin-bottom: 1rem;
-      }
-      
-      .mb-6 {
-        margin-bottom: 1.5rem;
-      }
-      
-      .mb-8 {
-        margin-bottom: 2rem;
-      }
-      
-      .mb-12 {
-        margin-bottom: 3rem;
-      }
-      
-      .mt-1 {
-        margin-top: 0.25rem;
-      }
-      
-      .mt-2 {
-        margin-top: 0.5rem;
-      }
-      
-      .mt-4 {
-        margin-top: 1rem;
-      }
-      
-      .mt-6 {
-        margin-top: 1.5rem;
-      }
-      
-      .mx-auto {
-        margin-left: auto;
-        margin-right: auto;
-      }
-      
-      .mx-4 {
-        margin-left: 1rem;
-        margin-right: 1rem;
-      }
-      
-      .ml-2 {
-        margin-left: 0.5rem;
-      }
-      
-      .mr-2 {
-        margin-right: 0.5rem;
-      }
-      
-      .space-x-6 > * + * {
-        margin-left: 1.5rem;
-      }
-      
-      .space-y-4 > * + * {
-        margin-top: 1rem;
-      }
-      
-      .space-y-8 > * + * {
-        margin-top: 2rem;
-      }
-      
-      .w-full {
-        width: 100%;
-      }
-      
-      .max-w-md {
-        max-width: 28rem;
-      }
-      
-      .max-w-2xl {
-        max-width: 42rem;
-      }
-      
-      .max-w-3xl {
-        max-width: 48rem;
-      }
-      
-      .rounded-md {
-        border-radius: 0.375rem;
-      }
-      
-      .rounded-lg {
-        border-radius: 0.5rem;
-      }
-      
-      .border {
-        border-width: 1px;
-        border-style: solid;
-        border-color: rgba(230, 230, 230, 0.2);
-      }
-      
-      .border-t {
-        border-top-width: 1px;
-        border-top-style: solid;
-        border-color: rgba(230, 230, 230, 0.1);
-      }
-      
-      .border-b {
-        border-bottom-width: 1px;
-        border-bottom-style: solid;
-        border-color: rgba(230, 230, 230, 0.1);
-      }
-      
-      .border-b-2 {
-        border-bottom-width: 2px;
-        border-bottom-style: solid;
-        border-color: rgba(230, 230, 230, 0.2);
-      }
-      
-      .pb-2 {
-        padding-bottom: 0.5rem;
-      }
-      
-      .inline-block {
-        display: inline-block;
-      }
-      
-      .hidden {
-        display: none;
-      }
-      
-      .relative {
-        position: relative;
-      }
-      
-      .absolute {
-        position: absolute;
-      }
-      
-      .fixed {
-        position: fixed;
-      }
-      
-      .inset-0 {
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-      
-      .inset-x-0 {
-        left: 0;
-        right: 0;
-      }
-      
-      .top-0 {
-        top: 0;
-      }
-      
-      .bottom-0 {
-        bottom: 0;
-      }
-      
-      .top-4 {
-        top: 1rem;
-      }
-      
-      .right-4 {
-        right: 1rem;
-      }
-      
-      .z-50 {
-        z-index: 50;
-      }
-      
-      .min-h-screen {
-        min-height: 100vh;
-      }
-      
-      .h-full {
-        height: 100%;
-      }
-      
-      .h-screen {
-        height: 100vh;
-      }
-      
-      .h-\[400px\] {
-        height: 400px;
-      }
-      
-      .grid {
-        display: grid;
-      }
-      
-      .grid-cols-1 {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-      }
-      
-      .gap-8 {
-        gap: 2rem;
-      }
-      
-      .overflow-hidden {
-        overflow: hidden;
-      }
-      
-      .whitespace-pre {
-        white-space: pre;
-      }
-      
-      .opacity-0 {
-        opacity: 0;
-      }
-      
-      .opacity-40 {
-        opacity: 0.4;
-      }
-      
-      .opacity-50 {
-        opacity: 0.5;
-      }
-      
-      .opacity-90 {
-        opacity: 0.9;
-      }
-      
-      .bg-opacity-50 {
-        --bg-opacity: 0.5;
-        background-color: rgba(13, 17, 23, var(--bg-opacity));
-      }
-      
-      .bg-opacity-90 {
-        --bg-opacity: 0.9;
-        background-color: rgba(13, 17, 23, var(--bg-opacity));
-      }
-      
-      .bg-opacity-95 {
-        --bg-opacity: 0.95;
-        background-color: rgba(13, 17, 23, var(--bg-opacity));
-      }
-      
-      .bg-black {
-        background-color: black;
-      }
-      
-      .bg-opacity-50 {
-        --bg-opacity: 0.5;
-        background-color: rgba(0, 0, 0, var(--bg-opacity));
-      }
-      
-      .shadow-sm {
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      }
-      
-      .transition {
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-      }
-      
-      .backdrop-blur-sm {
-        backdrop-filter: blur(4px);
-      }
-      
-      /* Focus & Hover states */
-      .hover\:bg-opacity-80:hover {
-        opacity: 0.8;
-      }
-      
-      .hover\:underline:hover {
-        text-decoration: underline;
-      }
-      
-      .hover\:text-code-accent:hover {
-        color: var(--code-accent);
-      }
-      
-      .hover\:text-code-text:hover {
-        color: var(--code-text);
-      }
-      
-      .hover\:border-code-accent\/40:hover {
-        border-color: rgba(230, 230, 230, 0.4);
-      }
-      
-      .focus\:outline-none:focus {
-        outline: 2px solid transparent;
-        outline-offset: 2px;
-      }
-      
-      .focus\:ring-2:focus {
-        box-shadow: 0 0 0 2px rgba(230, 230, 230, 0.4);
-      }
-      
-      .focus\:ring-code-accent:focus {
-        box-shadow: 0 0 0 2px rgba(230, 230, 230, 0.4);
-      }
-      
-      .focus\:ring-opacity-50:focus {
-        --tw-ring-opacity: 0.5;
-      }
-      
-      /* Responsive */
-      .pl-0 {
-        padding-left: 0;
-      }
-      
-      .pl-4 {
-        padding-left: 1rem;
-      }
-      
-      .pl-8 {
-        padding-left: 2rem;
-      }
-      
-      @media (min-width: 768px) {
-        .md\:flex-row {
-          flex-direction: row;
-        }
-        
-        .md\:text-xl {
-          font-size: 1.25rem;
-        }
-        
-        .md\:text-5xl {
-          font-size: 3rem;
-        }
-        
-        .md\:grid-cols-2 {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        
-        .md\:mb-0 {
-          margin-bottom: 0;
-        }
-      }
-      
-      @media (min-width: 1024px) {
-        .lg\:flex-row {
-          flex-direction: row;
-        }
-        
-        .lg\:w-1\/2 {
-          width: 50%;
-        }
-        
-        .lg\:grid-cols-3 {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-      }
-      
-      /* Animation styling */
-      .typing-animation span {
-        opacity: 0;
-        animation: typing 0.5s forwards;
-      }
-      
-      @keyframes typing {
-        0% { opacity: 0; }
-        100% { opacity: 1; }
-      }
-      
-      .code-graph-animation {
-        position: relative;
-        overflow: hidden;
-      }
-      
-      /* ASCII Art Styling */
-      #asciiArt {
-        font-family: monospace;
-        line-height: 1.2;
-        transition: opacity 0.5s ease;
-      }
-      
-      /* Ensure monochrome styling */
-      .border {
-        border-color: rgba(230, 230, 230, 0.2);
-      }
-      
-      .border-t, .border-b {
-        border-color: rgba(230, 230, 230, 0.1);
-      }
-      
-      button, .btn {
-        background-color: rgba(230, 230, 230, 0.1);
-        color: #E6E6E6;
-        border: 1px solid rgba(230, 230, 230, 0.2);
-      }
-      
-      button:hover, .btn:hover {
-        background-color: rgba(230, 230, 230, 0.15);
-      }
-      
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 50;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .modal.show {
-        display: flex;
-      }
-      
-      .code-animation-chart {
-        width: 100%;
-        height: 100%;
-      }
-      
-      .chart-line {
-        stroke: var(--code-accent);
-        stroke-width: 2;
-        fill: none;
-        transition: all 1s ease;
-      }
-      
-      .chart-dot {
-        fill: var(--code-function);
-        stroke: var(--code-accent);
-        stroke-width: 1;
-        transition: all 0.5s ease-in-out;
-      }
-      
-      .toast {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        background-color: var(--code-secondary);
-        color: var(--code-text);
-        border: 1px solid rgba(230, 230, 230, 0.2);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        max-width: 24rem;
-        z-index: 100;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        opacity: 0;
-        transform: translateY(1rem);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-      }
-      
-      .toast.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
-  </head>
-  <body>
-    <header id="header" class="fixed top-0 w-full bg-code-bg z-50 transition bg-opacity-50">
-      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="#" class="text-2xl font-semibold">
-          <span class="text-code-variable">Vera</span>
-          <span class="text-code-text">.</span>
-          <span class="text-code-function">ML</span>
-        </a>
-        <nav>
-          <ul class="flex space-x-6">
-            <li>
-              <a href="#about" class="hover:text-code-accent transition">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="#team" class="hover:text-code-accent transition">
-                Team
-              </a>
-            </li>
-            <li>
-              <a href="#contact" class="hover:text-code-accent transition">
-                Contact
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-    
-    <section id="hero" class="pt-28 pb-16 min-h-screen flex items-center">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row items-center gap-12">
-          <div class="lg:w-1/2">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">
-              <span class="text-code-variable">Vera</span>
-              <span class="text-code-text">.</span>
-              <span class="text-code-function">ML</span>
-            </h1>
-            <div class="text-lg md:text-xl leading-relaxed mb-8">
-              <p>
-                <span class="text-code-keyword">first</span>
-                <span class="text-code-variable"> developer-native</span>
-                <span class="text-code-text"> analytics platform that works at the</span>
-                <span class="text-code-function"> repository level</span>
-                <span class="text-code-text"> to turn every code change into a business insight —</span>
-                <span class="text-code-keyword"> automatically</span>
-                <span class="text-code-text">,</span>
-                <span class="text-code-keyword"> in real time</span>
-                <span class="text-code-text">,</span>
-                <span class="text-code-text"> and with</span>
-                <span class="text-code-function"> scientific rigor</span>
-                <span class="text-code-text">.</span>
-              </p>
-            </div>
-            <button
-              id="waitlistButton"
-              class="bg-code-accent hover:bg-opacity-80 text-white font-medium py-3 px-6 rounded-md transition focus:outline-none focus:ring-2 focus:ring-code-accent focus:ring-opacity-50"
-            >
-              Join Beta Waitlist →
-            </button>
-          </div>
-          <div class="lg:w-1/2 code-graph-animation">
-            <div id="codeAnimation" class="relative h-[400px] w-full rounded-lg bg-code-secondary overflow-hidden border border-code-accent/20">
-              <!-- ASCII Art Animation -->
-              <div class="absolute inset-0 p-6">
-                <pre id="asciiArt" class="font-code text-code-text text-center whitespace-pre h-full flex items-center justify-center text-xs md:text-sm overflow-hidden"></pre>
-              </div>
-              
-              <!-- Code Snippets -->
-              <div id="codeSnippet" class="absolute inset-x-0 bottom-0 bg-code-bg bg-opacity-95 p-4 text-sm typing-animation border-t border-code-accent/30">
-                <!-- Will be populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <section id="about" class="py-20 bg-code-secondary">
-      <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-12 inline-block border-b-2 border-code-accent pb-2">
-          <span class="text-code-keyword">about</span>
-          <span>()</span>
-        </h2>
-        <div class="max-w-3xl">
-          <p class="text-lg leading-relaxed mb-6">
-            <span class="text-code-comment">// Company Overview</span>
-          </p>
-          <p class="text-lg leading-relaxed mb-6">
-            Vera.ML is revolutionizing how development teams understand their
-            code changes and impact on business outcomes. We operate at the
-            repository level, collecting and analyzing data directly from your
-            codebase.
-          </p>
-          <p class="text-lg leading-relaxed mb-6">
-            <span class="text-code-comment">// Our Approach</span>
-          </p>
-          <p class="text-lg leading-relaxed">
-            Our platform provides
-            <span class="text-code-variable">real-time insights</span> and
-            <span class="text-code-function">actionable metrics</span> that
-            help teams make better decisions about their development process. By
-            analyzing code patterns, commit histories, and integration with
-            business data, Vera.ML creates a comprehensive picture of your
-            development ecosystem that translates technical work into business
-            value.
-          </p>
-        </div>
-      </div>
-    </section>
-    
-    <section id="team" class="py-20">
-      <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-12 inline-block border-b-2 border-code-accent pb-2">
-          <span class="text-code-function">team</span>
-          <span>.members</span>
-        </h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="p-6 bg-code-secondary rounded-lg border border-code-accent/20 hover:border-code-accent/40 transition">
-            <h3 class="text-xl font-semibold mb-3">
-              <span class="text-code-variable">member</span>.
-              <span class="text-code-function">alex_smith</span>
-            </h3>
-            <p class="text-code-comment mb-4">// Chief Technology Officer</p>
-            <p class="mb-6">10+ years of experience building data platforms and analytics systems for enterprise clients.</p>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="text-code-accent hover:underline flex items-center">
-              <i class="ri-linkedin-fill mr-2"></i> LinkedIn Profile
-            </a>
-          </div>
-          
-          <div class="p-6 bg-code-secondary rounded-lg border border-code-accent/20 hover:border-code-accent/40 transition">
-            <h3 class="text-xl font-semibold mb-3">
-              <span class="text-code-variable">member</span>.
-              <span class="text-code-function">jamie_chen</span>
-            </h3>
-            <p class="text-code-comment mb-4">// Head of Product</p>
-            <p class="mb-6">Expert in developer tools and analytics, previously led product teams at major tech companies.</p>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="text-code-accent hover:underline flex items-center">
-              <i class="ri-linkedin-fill mr-2"></i> LinkedIn Profile
-            </a>
-          </div>
-          
-          <div class="p-6 bg-code-secondary rounded-lg border border-code-accent/20 hover:border-code-accent/40 transition">
-            <h3 class="text-xl font-semibold mb-3">
-              <span class="text-code-variable">member</span>.
-              <span class="text-code-function">taylor_rodriguez</span>
-            </h3>
-            <p class="text-code-comment mb-4">// Lead Data Scientist</p>
-            <p class="mb-6">PhD in Computer Science with specialization in code analysis and machine learning applications.</p>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="text-code-accent hover:underline flex items-center">
-              <i class="ri-linkedin-fill mr-2"></i> LinkedIn Profile
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <section id="contact" class="py-20 bg-code-secondary">
-      <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-12 inline-block border-b-2 border-code-accent pb-2">
-          <span class="text-code-function">contact</span>
-          <span>()</span>
-        </h2>
-        <p class="text-lg mb-8 max-w-2xl mx-auto">
-          Interested in learning more about how Vera.ML can transform your development analytics? Reach out to our team.
-        </p>
-        <button
-          id="contactButton"
-          class="bg-code-accent hover:bg-opacity-80 text-white font-medium py-3 px-6 rounded-md transition focus:outline-none focus:ring-2 focus:ring-code-accent focus:ring-opacity-50"
-        >
-          Get in Touch
-        </button>
-      </div>
-    </section>
-    
-    <footer class="py-8 border-t border-code-secondary">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="mb-4 md:mb-0">
-            <span class="text-code-variable">Vera</span>
-            <span class="text-code-text">.</span>
-            <span class="text-code-function">ML</span>
-            <span class="text-code-comment ml-2">// © <span id="currentYear"></span></span>
-          </div>
-          <div class="flex space-x-6">
-            <a href="#" class="text-code-comment hover:text-code-text transition">
-              Privacy
-            </a>
-            <a href="#" class="text-code-comment hover:text-code-text transition">
-              Terms
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
-    
-    <!-- Waitlist Modal -->
-    <div id="waitlistModal" class="modal">
-      <div class="bg-code-secondary p-8 rounded-lg max-w-md w-full mx-4 relative">
-        <button id="closeWaitlistModal" class="absolute top-4 right-4 text-code-comment hover:text-code-text">
-          <i class="ri-close-line text-xl"></i>
-        </button>
-        <h3 class="text-2xl font-bold mb-6">
-          <span class="text-code-function">joinBeta</span>
-          <span>(</span>
-          <span class="text-code-variable">waitlist</span>
-          <span>)</span>
-        </h3>
-        <form id="waitlistForm" class="space-y-4">
-          <div>
-            <label for="email" class="block mb-2 text-code-comment">
-              // Your Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="email@example.com"
-              required
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            />
-            <p id="emailError" class="mt-1 text-sm text-code-keyword hidden"></p>
-          </div>
-          <div>
-            <label for="company" class="block mb-2 text-code-comment">
-              // Company Name
-            </label>
-            <input
-              id="company"
-              type="text"
-              placeholder="Your Company"
-              required
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            />
-            <p id="companyError" class="mt-1 text-sm text-code-keyword hidden"></p>
-          </div>
-          <div>
-            <label for="message" class="block mb-2 text-code-comment">
-              // Message (Optional)
-            </label>
-            <textarea
-              id="message"
-              rows="4"
-              placeholder="Tell us about your needs..."
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-code-accent hover:bg-opacity-80 text-white font-medium py-3 px-6 rounded-md transition focus:outline-none focus:ring-2 focus:ring-code-accent focus:ring-opacity-50"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="waveCanvas"></canvas>
+
+  <nav>
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#team">Team</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="section">
+    <div class="content">
+      <h1>Vera.ML</h1>
+      <p>The first developer-native analytics platform that works at the repository level to turn every code change into a business insight — automatically, in real time, and with scientific rigor.</p>
+      <p>Scroll down to learn more about our work and our team.</p>
     </div>
-    
-    <!-- Contact Modal -->
-    <div id="contactModal" class="modal">
-      <div class="bg-code-secondary p-8 rounded-lg max-w-md w-full mx-4 relative">
-        <button id="closeContactModal" class="absolute top-4 right-4 text-code-comment hover:text-code-text">
-          <i class="ri-close-line text-xl"></i>
-        </button>
-        <h3 class="text-2xl font-bold mb-6">
-          <span class="text-code-function">contact</span>
-          <span>(</span>
-          <span class="text-code-variable">us</span>
-          <span>)</span>
-        </h3>
-        <form id="contactForm" class="space-y-4">
-          <div>
-            <label for="contactEmail" class="block mb-2 text-code-comment">
-              // Your Email
-            </label>
-            <input
-              id="contactEmail"
-              type="email"
-              placeholder="email@example.com"
-              required
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            />
-            <p id="contactEmailError" class="mt-1 text-sm text-code-keyword hidden"></p>
-          </div>
-          <div>
-            <label for="contactName" class="block mb-2 text-code-comment">
-              // Your Name
-            </label>
-            <input
-              id="contactName"
-              type="text"
-              placeholder="Your Name"
-              required
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            />
-            <p id="contactNameError" class="mt-1 text-sm text-code-keyword hidden"></p>
-          </div>
-          <div>
-            <label for="contactMessage" class="block mb-2 text-code-comment">
-              // Message
-            </label>
-            <textarea
-              id="contactMessage"
-              rows="4"
-              placeholder="How can we help?"
-              required
-              class="w-full px-4 py-2 bg-code-bg border border-code-accent/30 rounded-md focus:outline-none focus:ring-2 focus:ring-code-accent text-code-text"
-            ></textarea>
-            <p id="contactMessageError" class="mt-1 text-sm text-code-keyword hidden"></p>
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-code-accent hover:bg-opacity-80 text-white font-medium py-3 px-6 rounded-md transition focus:outline-none focus:ring-2 focus:ring-code-accent focus:ring-opacity-50"
-          >
-            Send Message
-          </button>
-        </form>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section">
+    <div class="content">
+      <h2>About Us</h2>
+      <p><strong>// Company Overview</strong><br>
+      Vera.ML is revolutionizing how development teams understand their code changes and impact on business outcomes. We operate at the repository level, collecting and analyzing data directly from your codebase.</p>
+      <p><strong>// Our Approach</strong><br>
+      Our platform provides real-time insights and actionable metrics that help teams make better decisions about their development process. By analyzing code patterns, commit histories, and integration with business data, Vera.ML creates a comprehensive picture of your development ecosystem that translates technical work into business value.</p>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section id="team" class="section">
+    <div class="content">
+      <h2>Our Team</h2>
+      <p>The passionate creators behind Wavelength's interactive experiences.</p>
+      
+      <div class="team-members">
+        <div class="team-member">
+          <h3>Jayram Palamadai</h3>
+          <p>Co-founder and CEO with a passion for transforming how teams understand their development impact. Expert in machine learning and data science applied to software analytics.</p>
+          <a href="https://linkedin.com/in/jayram-palamadai" target="_blank">LinkedIn Profile</a>
+        </div>
+        <div class="team-member">
+          <h3>Dylan Brownstein</h3>
+          <p>Co-founder and CTO who bridges the gap between development and business metrics. Dylan brings deep expertise in repository analysis and developer productivity measurement.</p>
+          <a href="https://linkedin.com/in/dylan-brownstein" target="_blank">LinkedIn Profile</a>
+        </div>
+        <div class="team-member">
+          <h3>Jakub M.</h3>
+          <p>Lead Engineer with a background in scalable analytics platforms. Jakub specializes in creating high-performance systems that process and visualize development data in real-time.</p>
+          <a href="https://linkedin.com/in/jakub-m" target="_blank">LinkedIn Profile</a>
+        </div>
       </div>
+      
+      <p style="margin-top: 1rem;">Contact us at <a href="mailto:info@vera.ml">info@vera.ml</a></p>
     </div>
-    
-    <!-- Toast -->
-    <div id="toast" class="toast">
-      <div class="font-semibold text-lg mb-1" id="toastTitle"></div>
-      <div id="toastDescription"></div>
-    </div>
-    
-    <script>
-      // Current year for footer
-      document.getElementById('currentYear').textContent = new Date().getFullYear();
-      
-      // Header scroll effect
-      window.addEventListener('scroll', function() {
-        const header = document.getElementById('header');
-        if (window.scrollY > 10) {
-          header.classList.add('bg-opacity-90', 'backdrop-blur-sm', 'border-b', 'border-code-secondary', 'shadow-sm');
-        } else {
-          header.classList.remove('bg-opacity-90', 'backdrop-blur-sm', 'border-b', 'border-code-secondary', 'shadow-sm');
+  </section>
+
+  <script>
+    ////////////// MODIFIERS ////////////////
+    const zModifier = 1.3, rows = 60; // modify to update animation parameters
+    /////////////////////////////////////////
+
+    // set up canvas
+    const canvas = document.getElementById('waveCanvas'),
+          ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // update the CSS variable so notebook text always matches ruling spacing
+      const spacingY = canvas.height / rows;
+      document.documentElement.style.setProperty('--line-spacing', spacingY + 'px');
+    }
+    window.addEventListener('resize', resize);
+    window.addEventListener('load',  resize);
+
+    // track mouse
+    let mouseY = 0.5;
+    document.addEventListener('mousemove', e => {
+      mouseY = e.clientY / canvas.height;
+    });
+
+    // the draw loop
+    function draw() {
+      const w = canvas.width,
+            h = canvas.height,
+            t = Date.now() * 0.001;
+
+      // how far have we scrolled, in multiples of one viewport height?
+      const scrollNorm = Math.min(window.scrollY / window.innerHeight, 1);
+
+      // take the greater of mouse‐down or scroll‐down
+      const control = Math.max(mouseY, scrollNorm);
+
+      // when control ≥ (1/1.3), this clamps to 0—i.e. perfectly straight lines
+      const zFactor = Math.max(1 - zModifier * control, 0);
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      ctx.lineWidth = 1;
+
+      const cols = 80,
+            spacingX = w / cols,
+            spacingY = h / rows;
+
+      for (let y = 0; y < rows; y++) {
+        ctx.beginPath();
+        for (let x = 0; x < cols; x++) {
+          const dx = x - cols/2,
+                dy = y - rows/2,
+                dist = Math.hypot(dx, dy),
+                z    = Math.sin(dist * 0.5 - t) * 20 * zFactor,
+                px   = x * spacingX + Math.sin(t + y*0.1) * (mouseY)*10,
+                py   = y * spacingY + z;
+
+          x===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
         }
-      });
-      
-      // Modal functionality
-      const waitlistModal = document.getElementById('waitlistModal');
-      const contactModal = document.getElementById('contactModal');
-      const waitlistButton = document.getElementById('waitlistButton');
-      const contactButton = document.getElementById('contactButton');
-      const closeWaitlistModal = document.getElementById('closeWaitlistModal');
-      const closeContactModal = document.getElementById('closeContactModal');
-      
-      function openModal(modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
+        ctx.stroke();
       }
-      
-      function closeModal(modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = 'auto';
-      }
-      
-      waitlistButton.addEventListener('click', () => openModal(waitlistModal));
-      contactButton.addEventListener('click', () => openModal(contactModal));
-      closeWaitlistModal.addEventListener('click', () => closeModal(waitlistModal));
-      closeContactModal.addEventListener('click', () => closeModal(contactModal));
-      
-      // Close modal when clicking outside
-      waitlistModal.addEventListener('click', (e) => {
-        if (e.target === waitlistModal) closeModal(waitlistModal);
-      });
-      
-      contactModal.addEventListener('click', (e) => {
-        if (e.target === contactModal) closeModal(contactModal);
-      });
-      
-      // Form validation and submission
-      const waitlistForm = document.getElementById('waitlistForm');
-      const contactForm = document.getElementById('contactForm');
-      
-      waitlistForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const company = document.getElementById('company').value;
-        const message = document.getElementById('message').value;
-        
-        if (!validateEmail(email)) {
-          document.getElementById('emailError').textContent = 'Please enter a valid email address';
-          document.getElementById('emailError').classList.remove('hidden');
-          return;
-        }
-        
-        if (!company) {
-          document.getElementById('companyError').textContent = 'Company name is required';
-          document.getElementById('companyError').classList.remove('hidden');
-          return;
-        }
-        
-        // Here you would normally send data to your server
-        console.log('Waitlist submission:', { email, company, message });
-        
-        // Show toast
-        showToast('Successfully Joined Waitlist', 'Thank you for your interest! We\'ll be in touch soon.');
-        
-        // Reset form and close modal
-        waitlistForm.reset();
-        closeModal(waitlistModal);
-      });
-      
-      contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('contactEmail').value;
-        const name = document.getElementById('contactName').value;
-        const message = document.getElementById('contactMessage').value;
-        
-        if (!validateEmail(email)) {
-          document.getElementById('contactEmailError').textContent = 'Please enter a valid email address';
-          document.getElementById('contactEmailError').classList.remove('hidden');
-          return;
-        }
-        
-        if (!name) {
-          document.getElementById('contactNameError').textContent = 'Your name is required';
-          document.getElementById('contactNameError').classList.remove('hidden');
-          return;
-        }
-        
-        if (!message) {
-          document.getElementById('contactMessageError').textContent = 'Please include a message';
-          document.getElementById('contactMessageError').classList.remove('hidden');
-          return;
-        }
-        
-        // Here you would normally send data to your server
-        console.log('Contact submission:', { email, name, message });
-        
-        // Show toast
-        showToast('Message Sent', 'Thanks for reaching out! We\'ll respond to your message soon.');
-        
-        // Reset form and close modal
-        contactForm.reset();
-        closeModal(contactModal);
-      });
-      
-      function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(String(email).toLowerCase());
-      }
-      
-      // Reset errors when input changes
-      document.getElementById('email').addEventListener('input', () => {
-        document.getElementById('emailError').classList.add('hidden');
-      });
-      
-      document.getElementById('company').addEventListener('input', () => {
-        document.getElementById('companyError').classList.add('hidden');
-      });
-      
-      document.getElementById('contactEmail').addEventListener('input', () => {
-        document.getElementById('contactEmailError').classList.add('hidden');
-      });
-      
-      document.getElementById('contactName').addEventListener('input', () => {
-        document.getElementById('contactNameError').classList.add('hidden');
-      });
-      
-      document.getElementById('contactMessage').addEventListener('input', () => {
-        document.getElementById('contactMessageError').classList.add('hidden');
-      });
-      
-      // Toast functionality
-      function showToast(title, description) {
-        const toast = document.getElementById('toast');
-        const toastTitle = document.getElementById('toastTitle');
-        const toastDescription = document.getElementById('toastDescription');
-        
-        toastTitle.textContent = title;
-        toastDescription.textContent = description;
-        
-        toast.classList.add('show');
-        
-        setTimeout(() => {
-          toast.classList.remove('show');
-        }, 3000);
-      }
-      
-      // ASCII Art Animation
-      let currentDataSet = 1;
-      const codeSnippetContainer = document.getElementById('codeSnippet');
-      const asciiArtContainer = document.getElementById('asciiArt');
-      
-      // ASCII Art patterns for different datasets
-      const asciiPatterns = [
-        // Dataset 1: Graph-like ASCII art
-        `
-       ┌─────────────────────────────────────┐
-       │                                     │
-       │                                     │
-       │    ╭────╮     ╭───╮                │
-       │    │    │     │   │    ╭────╮      │
-       │    │    │     │   │    │    │      │
-       │    │    ╰─────╯   ╰────╯    │      │
-       │    │                        │      │
-       │    │                        │      │
-       │    ╰────────────────────────╯      │
-       │                                     │
-       │                                     │
-       │     VERA.ML ANALYTICS               │
-       │                                     │
-       └─────────────────────────────────────┘
-        `,
-        
-        // Dataset 2: Code structure ASCII art
-        `
-       ┌─────────────────────────────────────┐
-       │                                     │
-       │  function analyzeCode(repo) {       │
-       │    const patterns = [];             │
-       │                                     │
-       │    for (const commit of repo) {     │
-       │      const stats = commit.stats;    │
-       │      patterns.push({               │
-       │        type: commit.type,           │
-       │        impact: calculateImpact(stats)│
-       │      });                            │
-       │    }                                │
-       │                                     │
-       │    return patterns;                 │
-       │  }                                  │
-       └─────────────────────────────────────┘
-        `,
-        
-        // Dataset 3: Repository visualization
-        `
-       ┌─────────────────────────────────────┐
-       │                                     │
-       │  REPOSITORY ANALYTICS               │
-       │                                     │
-       │  ├── src/                           │
-       │  │   ├── components/                │
-       │  │   │   └── [+25% optimization]    │
-       │  │   ├── utils/                     │
-       │  │   │   └── [10 bugs fixed]        │
-       │  │   └── api/                       │
-       │  │       └── [3 new endpoints]      │
-       │  ├── tests/                         │
-       │  │   └── [coverage: 89%]            │
-       │  └── docs/                          │
-       │      └── [updated: May 10]          │
-       │                                     │
-       └─────────────────────────────────────┘
-        `
-      ];
-      
-      // Update ASCII art and animate
-      function updateAsciiArt() {
-        const pattern = asciiPatterns[currentDataSet - 1];
-        asciiArtContainer.innerHTML = pattern;
-        
-        // Simple fade-in animation
-        asciiArtContainer.style.opacity = '0';
-        setTimeout(() => {
-          asciiArtContainer.style.opacity = '1';
-        }, 100);
-      }
-      
-      // Get code snippets based on the data set
-      function getCodeSnippet(dataSet) {
-        if (dataSet === 1) {
-          return `
-            <div class="mb-2">
-              <span class="text-code-comment">// Analyzing commit patterns</span>
-            </div>
-            <div class="mb-2">
-              <span class="text-code-keyword">function</span>
-              <span class="text-code-function"> analyzeCodeTrends</span>
-              <span>(</span>
-              <span class="text-code-variable">data</span>
-              <span>) {</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">const</span>
-              <span class="text-code-variable"> trends</span>
-              <span> =</span>
-              <span class="text-code-variable"> data</span>
-              <span>.</span>
-              <span class="text-code-function">map</span>
-              <span>(</span>
-              <span class="text-code-variable">point</span>
-              <span> => </span>
-              <span class="text-code-variable">point</span>
-              <span>.</span>
-              <span class="text-code-variable">value</span>
-              <span> * 1.5);</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">return</span>
-              <span class="text-code-function"> visualizeData</span>
-              <span>(</span>
-              <span class="text-code-variable">trends</span>
-              <span>);</span>
-            </div>
-            <div class="mb-2">
-              <span>}</span>
-            </div>
-          `;
-        } else if (dataSet === 2) {
-          return `
-            <div class="mb-2">
-              <span class="text-code-comment">// Optimizing repository performance</span>
-            </div>
-            <div class="mb-2">
-              <span class="text-code-keyword">function</span>
-              <span class="text-code-function"> improvePerformance</span>
-              <span>(</span>
-              <span class="text-code-variable">metrics</span>
-              <span>) {</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">const</span>
-              <span class="text-code-variable"> bottlenecks</span>
-              <span> =</span>
-              <span class="text-code-function"> findBottlenecks</span>
-              <span>(</span>
-              <span class="text-code-variable">metrics</span>
-              <span>);</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-variable">bottlenecks</span>
-              <span>.</span>
-              <span class="text-code-function">forEach</span>
-              <span>(</span>
-              <span class="text-code-variable">issue</span>
-              <span> => </span>
-              <span class="text-code-function">optimize</span>
-              <span>(</span>
-              <span class="text-code-variable">issue</span>
-              <span>)</span>
-              <span>);</span>
-            </div>
-            <div class="mb-2">
-              <span>}</span>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="mb-2">
-              <span class="text-code-comment">// Generating business insights</span>
-            </div>
-            <div class="mb-2">
-              <span class="text-code-keyword">function</span>
-              <span class="text-code-function"> generateInsights</span>
-              <span>(</span>
-              <span class="text-code-variable">codeData</span>
-              <span>) {</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">const</span>
-              <span class="text-code-variable"> insights</span>
-              <span> = {};</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">for</span>
-              <span> (</span>
-              <span class="text-code-keyword">const</span>
-              <span class="text-code-variable"> metric</span>
-              <span class="text-code-keyword"> of</span>
-              <span class="text-code-variable"> codeData</span>
-              <span>) {</span>
-            </div>
-            <div class="pl-8 mb-2">
-              <span class="text-code-variable">insights</span>
-              <span>[</span>
-              <span class="text-code-variable">metric</span>
-              <span>.</span>
-              <span class="text-code-variable">key</span>
-              <span>]</span>
-              <span> =</span>
-              <span class="text-code-function"> processMetric</span>
-              <span>(</span>
-              <span class="text-code-variable">metric</span>
-              <span>);</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span>}</span>
-            </div>
-            <div class="pl-4 mb-2">
-              <span class="text-code-keyword">return</span>
-              <span class="text-code-variable"> insights</span>
-              <span>;</span>
-            </div>
-            <div class="mb-2">
-              <span>}</span>
-            </div>
-          `;
-        }
-      }
-      
-      // Animate code snippets
-      function animateCode() {
-        codeSnippetContainer.innerHTML = getCodeSnippet(currentDataSet);
-        
-        const codeElements = codeSnippetContainer.querySelectorAll('span');
-        codeElements.forEach((el, index) => {
-          el.style.opacity = '0';
-          setTimeout(() => {
-            el.style.animation = 'typing 0.5s forwards';
-          }, 50 * (index % 12));
-        });
-      }
-      
-      // Initialize animation
-      updateAsciiArt();
-      animateCode();
-      
-      // Set interval to change ASCII art and code animations
-      setInterval(() => {
-        currentDataSet = (currentDataSet % 3) + 1;
-        updateAsciiArt();
-        animateCode();
-      }, 5000);
-      
-      // Smooth scrolling for navigation
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          
-          const targetId = this.getAttribute('href');
-          if (targetId === '#') return;
-          
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 80,
-              behavior: 'smooth'
-            });
-          }
-        });
-      });
-    </script>
-  </body>
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
 </html>
